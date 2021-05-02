@@ -1,14 +1,11 @@
 import React from "react";
 
-const PetCard = () => {
+const PetCard = ({ image }) => {
+  console.log(image);
   return (
     <>
       <div className="card my-3">
-        <img
-          src="assets/images/boxer.jpeg"
-          className="card-img-top"
-          alt="..."
-        />
+        <img src={image} className="card-img-top" alt="..." />
         <div className="card-body">
           <h5 className="card-title">Card title</h5>
           <p className="card-text">
