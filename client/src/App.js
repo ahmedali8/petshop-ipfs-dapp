@@ -1,5 +1,7 @@
 import React, { useContext } from "react";
 import { DrizzleContext } from "@drizzle/react-plugin";
+import AdminPanel from "./components/AdminPanel";
+import PetList from "./components/PetList";
 
 const App = () => {
   console.log("DrizzleContext >>> ", DrizzleContext);
@@ -13,10 +15,20 @@ const App = () => {
 
   return (
     <>
-      <div className="container text-center my-2">
-        <h1>PETSHOP DAPP</h1>
-        <div className="alert alert-success" role="alert">
-          Network connected: Local 5777
+      <div className="container my-2">
+        <div className="text-center">
+          <h1>PETSHOP DAPP</h1>
+          <div className="alert alert-success" role="alert">
+            Network connected: Local 5777
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12 col-md-10 mx-auto">
+            <AdminPanel />
+          </div>
+          <div className="col-12">
+            <PetList />
+          </div>
         </div>
       </div>
     </>
