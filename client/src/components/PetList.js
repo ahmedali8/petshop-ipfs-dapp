@@ -8,7 +8,7 @@ const PetList = () => {
       <div className="container">
         <div className="row">
           {petListJson.map((_, i) => (
-            <div key={i} className="col-12 col-md-3">
+            <div key={i} className="col-12 col-md-4 col-lg-3">
               <PetCard />
             </div>
           ))}

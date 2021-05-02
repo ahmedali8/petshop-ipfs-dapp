@@ -5,6 +5,8 @@ import { Drizzle } from "@drizzle/store";
 import { DrizzleContext } from "@drizzle/react-plugin";
 import Petshop from "./contracts/Petshop.json";
 
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+
 const options = {
   contracts: [Petshop],
   web3: {

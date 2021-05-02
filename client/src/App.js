@@ -2,6 +2,9 @@ import React, { useContext } from "react";
 import { DrizzleContext } from "@drizzle/react-plugin";
 import AdminPanel from "./components/AdminPanel";
 import PetList from "./components/PetList";
+import Loading from "./components/Loader";
+
+import "./App.css";
 
 const App = () => {
   console.log("DrizzleContext >>> ", DrizzleContext);
@@ -11,7 +14,7 @@ const App = () => {
 
   // const {drizzle, drizzleState, initialized} = useDrizzle;
 
-  if (!useDrizzle.initialized) return "Drizzle Loading...";
+  if (!useDrizzle.initialized) return <Loading />;
 
   return (
     <>
