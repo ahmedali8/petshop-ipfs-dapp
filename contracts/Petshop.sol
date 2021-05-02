@@ -65,6 +65,9 @@ contract Petshop is Context, Ownable, ERC721URIStorage {
         string memory baseTokenURI
     ) ERC721(name, symbol) {
         _baseTokenURI = baseTokenURI;
+
+        // start from tokenId 1
+        _tokenIdTracker.increment();
     }
 
     receive() external payable {
@@ -76,29 +79,27 @@ contract Petshop is Context, Ownable, ERC721URIStorage {
     }
 
     /**
-     * @dev Creates a new token. Its token ID will be automatically
+     * @dev Creates a new token to 'to_'. Its token ID will be automatically
      * assigned (and available on the emitted {IERC721-Transfer} event), and the token
      * URI will be set
      *
-     * See {ERC721-_safeMint}.
+     * @param to_ the address to which pet is minted to
+     * @param price_ the price of the pet
+     * @param tokenURI_ the token URI of the pet
      *
      * Requirements:
      *
      * - the caller must have be the owner of Petshop
      */
-    function createPet(uint256 price_, string memory tokenURI_)
-        public
-        virtual
-        onlyOwner()
-        returns (uint256)
-    {
-        // start from tokenId 1
-        _tokenIdTracker.increment();
-
+    function createPet(
+        address to_,
+        uint256 price_,
+        string memory tokenURI_
+    ) public virtual onlyOwner() returns (uint256) {
         uint256 tokenId_ = _tokenIdTracker.current();
 
         // mint pet
-        _safeMint(_msgSender(), tokenId_);
+        _safeMint(to_, tokenId_);
 
         // set tokenURI of pet
         _setTokenURI(tokenId_, tokenURI_);
@@ -113,10 +114,21 @@ contract Petshop is Context, Ownable, ERC721URIStorage {
         _tokenIdTracker.increment();
 
         // emit event
-        emit PetCreated(_msgSender(), tokenId_, price_, tokenURI_);
+        emit PetCreated(to_, tokenId_, price_, tokenURI_);
+
+        // new tokenId
         return tokenId_;
     }
 
+    /**
+     * @dev Anyone can buy pet by giving the amount of ether
+     *
+     * @param tokenId_ the tokenId to be bought
+     *
+     * Requirements:
+     *
+     * - the caller must provide ether price of pet
+     */
     function buyPet(uint256 tokenId_) public payable returns (bool) {
         require(
             tokenId_ > 0 && _exists(tokenId_),
@@ -133,10 +145,15 @@ contract Petshop is Context, Ownable, ERC721URIStorage {
         );
 
         // transfer funds to owner
-        payable(owner()).transfer(msg.value);
+        payable(prevOwner).transfer(msg.value);
 
         // transfer pet to new user (clears approvals too)
-        safeTransferFrom(owner(), msg.sender, tokenId_);
+        _safeTransfer(
+            prevOwner,
+            msg.sender,
+            tokenId_,
+            "Petshop: user buying owner's pet"
+        );
 
         emit PetPurchase(prevOwner, msg.sender, tokenId_, msg.value);
 
@@ -144,14 +161,26 @@ contract Petshop is Context, Ownable, ERC721URIStorage {
         return true;
     }
 
-    function changePetPrice(uint256 tokenId_, uint256 price_)
-        public
-        onlyOwner()
-    {
+    /**
+     * @dev Anyone can buy pet by giving the amount of ether
+     *
+     * @param tokenId_ the tokenId to be bought
+     * @param price_ price value to be changed
+     *
+     * Requirements:
+     *
+     * - the caller must be the owner or isApproved of the pet
+     */
+    function changePetPrice(uint256 tokenId_, uint256 price_) public {
         require(
             tokenId_ > 0 && _exists(tokenId_),
             "Petshop: tokenId not valid"
         );
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId_),
+            "ERC721: transfer caller is not owner nor approved"
+        );
+
         uint256 prevPrice_ = tokenPrices[tokenId_];
         tokenPrices[tokenId_] = price_;
 
