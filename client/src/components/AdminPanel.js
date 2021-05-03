@@ -1,20 +1,33 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
+import { DrizzleContext } from "@drizzle/react-plugin";
 import Select from "react-select";
 import countryList from "react-select-country-list";
 import createMetaData from "../createMetaData";
 import ipfs from "../ipfsConfig";
 
 const AdminPanel = () => {
+  // function FromWei(n) {
+  //   return drizzle.web3.utils.fromWei(n, "ether").toString();
+  // }
+
+  const { drizzle, drizzleState } = useContext(DrizzleContext.Context);
+  const [stackId, setStackId] = useState(null);
+
   const [name, setName] = useState("");
   const [breed, setBreed] = useState("");
   const [country, setCountry] = useState("");
   const [age, setAge] = useState("");
+  const [price, setPrice] = useState(0);
   const countryOptions = useMemo(() => countryList().getData(), []);
 
   let imgBuffer;
   let imgHash;
   let jsonData;
   let jsonHash;
+
+  function toWei(n) {
+    return drizzle.web3.utils.toWei(n, "ether");
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,8 +40,15 @@ const AdminPanel = () => {
     jsonData = await createMetaData(name, imgHash, breed, country, age);
     jsonHash = await uploadData(jsonData);
     console.log("jsonHash ", jsonHash);
+
+    await createPet(
+      drizzleState.accounts[0],
+      toWei(price.toString()),
+      jsonHash
+    );
   };
 
+  // Upload data to ipfs
   async function uploadData(data) {
     console.log(data);
     try {
@@ -42,6 +62,48 @@ const AdminPanel = () => {
       return;
     }
   }
+
+  // send transaction to blockchain
+  const createPet = async (account, price, hash) => {
+    // Get contract Obj to send tx
+    const contract = drizzle.contracts.Petshop;
+
+    // let drizzle know we want to call the method with 'value'
+    const stackId = contract.methods["createPet"].cacheSend(
+      account,
+      price,
+      hash,
+      {
+        from: account,
+      }
+    );
+    // console.log("stackId >>> ", stackId);
+
+    // save the 'stackId' for later reference
+    setStackId(stackId);
+  };
+
+  const getTxStatus = () => {
+    // get the transaction states from the drizzle state
+    const { transactions, transactionStack } = drizzleState;
+    console.log("transactions >>> ", transactions);
+    console.log("transactionStack >>> ", transactionStack);
+
+    console.log("stackId >>> ", stackId);
+    // get the transaction hash using our saved 'stackId'
+    const txHash = transactionStack[stackId];
+
+    // if transaction hash does not exist, don't display anything
+    if (!txHash) return null;
+
+    console.log("txHash >>> ", txHash);
+    // otherwise, return the transaction status
+    return `Transaction status: ${
+      transactions[txHash] !== undefined
+        ? transactions[txHash]?.status
+        : "pending..."
+    }`;
+  };
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -104,6 +166,17 @@ const AdminPanel = () => {
 
             <div className="form-row">
               <div className="form-group col-md-6">
+                <label htmlFor="age">Price (ether)</label>
+                <input
+                  type="number"
+                  step="any"
+                  className="form-control"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group col-md-6">
                 <label htmlFor="fileInput">Choose image</label>
                 <input
                   type="file"
@@ -113,10 +186,14 @@ const AdminPanel = () => {
                   required
                 />
               </div>
-              <div className="form-group col-md-6">
-                <button type="submit" className="btn btn-primary">
+            </div>
+
+            <div className="form-row">
+              <div className="form-group col-md-6 mx-auto">
+                <button type="submit" className="btn btn-primary w-100">
                   Submit
                 </button>
+                <div>{getTxStatus()}</div>
               </div>
             </div>
           </form>
