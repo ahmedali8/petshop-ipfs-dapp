@@ -15,6 +15,10 @@ const options = {
       url: "ws://127.0.0.1:7545",
     },
   },
+  // networkWhitelist: [
+  //   1337, // Local testnet
+  //   4, // Rinkeby testnet
+  // ],
 };
 
 // setup drizzle
