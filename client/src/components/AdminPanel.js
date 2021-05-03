@@ -18,54 +18,23 @@ const AdminPanel = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await uploadImage();
-    // imgHash = await uploadData(imgBuffer);
 
-    // const imgURL = `https://ipfs.infura.io/ipfs/${imgHash}`;
+    imgHash = await uploadData(imgBuffer);
+    console.log("imgHash ", imgHash);
+
+    // const URL = `https://ipfs.infura.io/ipfs/${hash}`;
+
     jsonData = await createMetaData(name, imgHash, breed, country, age);
-    await uploadJsonData();
-    // jsonHash = await uploadData(jsonData);
+    jsonHash = await uploadData(jsonData);
+    console.log("jsonHash ", jsonHash);
   };
 
-  // async function uploadData(data) {
-  //   console.log(data);
-  //   try {
-  //     const { path } = await ipfs.add(data); // { cid, path, size }
-  //     console.log("path ", path);
-  //     return path;
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Please select correct image again!");
-  //     // setLoading(false);
-  //     return;
-  //   }
-  // }
-
-  // add data to ipfs
-  async function uploadImage() {
-    console.log(imgBuffer);
+  async function uploadData(data) {
+    console.log(data);
     try {
-      const { path } = await ipfs.add(imgBuffer); // { cid, path, size }
+      const { path } = await ipfs.add(data); // { cid, path, size }
       console.log("path ", path);
-
-      imgHash = path;
-      console.log("imgHash ", imgHash);
-    } catch (error) {
-      console.error(error);
-      alert("Please select correct image again!");
-      // setLoading(false);
-      return;
-    }
-  }
-
-  async function uploadJsonData() {
-    console.log(jsonData);
-    try {
-      const { path } = await ipfs.add(jsonData); // { cid, path, size }
-      console.log("path ", path);
-
-      jsonHash = path;
-      console.log("jsonHash ", jsonHash);
+      return path;
     } catch (error) {
       console.error(error);
       alert("Please select correct image again!");

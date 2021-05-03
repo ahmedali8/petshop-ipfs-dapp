@@ -39,6 +39,3 @@ const createMetaData = async (name, imgHash, breed, location, age) => {
 };
 
 export default createMetaData;
-
-// https://ipfs.infura.io/ipfs/QmW41jh6XTXpJMbVvKvJX1ApLdxbGdVqLr1AeBpvnALBvg
-// https://ipfs.infura.io/ipfs/QmSqjar2PnCQcNxvbLbdMXyg2nPBnmzbnqYmqs6BQHPEwT
