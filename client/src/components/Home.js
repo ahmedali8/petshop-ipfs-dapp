@@ -1,24 +1,26 @@
-import React, { useContext, useEffect, useState } from "react";
-import { DrizzleContext } from "@drizzle/react-plugin";
+import React, { useEffect, useState } from "react";
+import { drizzleReactHooks } from "@drizzle/react-plugin";
 import AdminPanel from "./AdminPanel";
 import PetList from "./PetList";
 
+const { useDrizzle, useDrizzleState } = drizzleReactHooks;
+
 const Home = () => {
+  const { drizzle } = useDrizzle();
+  console.log(drizzle);
+  const drizzleState = useDrizzleState((state) => state);
+  console.log(drizzleState);
+
   const [chainId, setChainId] = useState("");
   const [dataKey, setDataKey] = useState(null);
 
-  const useDrizzle = useContext(DrizzleContext.Context);
-  const { drizzle, drizzleState, initialized } = useDrizzle;
-
-  console.log("useDrizzle >>> ", useDrizzle);
-
   useEffect(() => {
     async function getNetworkId() {
-      setChainId(initialized && (await drizzle.web3.eth.getChainId()));
+      setChainId(await drizzle.web3.eth.getChainId());
     }
 
     getNetworkId();
-  }, [initialized, drizzle]);
+  }, [, drizzle]);
 
   useEffect(() => {
     // Getting contract obj from drizzle

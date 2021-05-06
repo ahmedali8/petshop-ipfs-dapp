@@ -2,9 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import { Drizzle } from "@drizzle/store";
-import { DrizzleContext } from "@drizzle/react-plugin";
+import { drizzleReactHooks } from "@drizzle/react-plugin";
 import Petshop from "./contracts/Petshop.json";
-
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 const options = {
@@ -15,6 +14,9 @@ const options = {
       url: "ws://127.0.0.1:7545",
     },
   },
+  events: {
+    Petshop: ["PetCreated"],
+  },
   // networkWhitelist: [
   //   1337, // Local testnet
   //   4, // Rinkeby testnet
@@ -24,11 +26,13 @@ const options = {
 // setup drizzle
 const drizzle = new Drizzle(options);
 
+const { DrizzleProvider } = drizzleReactHooks;
+
 ReactDOM.render(
   <React.StrictMode>
-    <DrizzleContext.Provider drizzle={drizzle}>
+    <DrizzleProvider drizzle={drizzle}>
       <App />
-    </DrizzleContext.Provider>
+    </DrizzleProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

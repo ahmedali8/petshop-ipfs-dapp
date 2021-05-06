@@ -1,14 +1,15 @@
-import React, { useContext } from "react";
-import { DrizzleContext } from "@drizzle/react-plugin";
+import React from "react";
+import { drizzleReactHooks } from "@drizzle/react-plugin";
 import Loading from "./components/Loader";
 import Home from "./components/Home";
 
 import "./App.css";
 
+const { useDrizzleState } = drizzleReactHooks;
+
 const App = () => {
-  const useDrizzle = useContext(DrizzleContext.Context);
-  console.log("useDrizzle >>> ", useDrizzle);
-  const { initialized } = useDrizzle;
+  console.log(drizzleReactHooks); // DrizzleProvider, Initializer, useDrizzle, useDrizzleState
+  const drizzleStatus = useDrizzleState((state) => state.drizzleStatus);
 
   window.ethereum.on("accountsChanged", (accounts) => {
     window.location.reload();
@@ -19,7 +20,7 @@ const App = () => {
   });
 
   // Display loading component if drizzle is not initialized
-  if (!initialized) return <Loading />;
+  if (!drizzleStatus.initialized) return <Loading />;
 
   return (
     <>

@@ -1,16 +1,24 @@
-import React, { useState, useMemo, useContext } from "react";
-import { DrizzleContext } from "@drizzle/react-plugin";
+import React, { useState, useMemo } from "react";
+import { drizzleReactHooks } from "@drizzle/react-plugin";
 import Select from "react-select";
 import countryList from "react-select-country-list";
 import createMetaData from "../createMetaData";
 import ipfs from "../ipfsConfig";
+import Loader from "./Loader";
+
+const { useDrizzle, useDrizzleState } = drizzleReactHooks;
 
 const AdminPanel = () => {
+  const { drizzle } = useDrizzle();
+  console.log(drizzle);
+  const drizzleState = useDrizzleState((state) => state);
+  console.log(drizzleState);
+
   // function FromWei(n) {
   //   return drizzle.web3.utils.fromWei(n, "ether").toString();
   // }
+  const [loading, setLoading] = useState(false);
 
-  const { drizzle, drizzleState } = useContext(DrizzleContext.Context);
   const [stackId, setStackId] = useState(null);
 
   const [name, setName] = useState("");
@@ -31,6 +39,7 @@ const AdminPanel = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     imgHash = await uploadData(imgBuffer);
     console.log("imgHash ", imgHash);
@@ -46,6 +55,14 @@ const AdminPanel = () => {
       toWei(price.toString()),
       jsonHash
     );
+
+    setName("");
+    setBreed("");
+    setCountry("");
+    setAge("");
+    setPrice(0);
+
+    setLoading(false);
   };
 
   // Upload data to ipfs
@@ -81,6 +98,8 @@ const AdminPanel = () => {
 
     // save the 'stackId' for later reference
     setStackId(stackId);
+
+    return true;
   };
 
   const getTxStatus = () => {
@@ -97,6 +116,7 @@ const AdminPanel = () => {
     if (!txHash) return null;
 
     console.log("txHash >>> ", txHash);
+
     // otherwise, return the transaction status
     return `Transaction status: ${
       transactions[txHash] !== undefined
@@ -108,11 +128,15 @@ const AdminPanel = () => {
   const handleFile = (e) => {
     const file = e.target.files[0];
     const reader = new window.FileReader();
-    reader.readAsArrayBuffer(file);
-    reader.onloadend = () => {
-      imgBuffer = Buffer(reader.result);
-    };
+    if (file) {
+      reader.readAsArrayBuffer(file);
+      reader.onloadend = () => {
+        imgBuffer = Buffer(reader.result);
+      };
+    }
   };
+
+  if (loading) return <Loader />;
 
   return (
     <>
@@ -193,7 +217,7 @@ const AdminPanel = () => {
                 <button type="submit" className="btn btn-primary w-100">
                   Submit
                 </button>
-                <div>{getTxStatus()}</div>
+                <div className="text-center">{getTxStatus()}</div>
               </div>
             </div>
           </form>
