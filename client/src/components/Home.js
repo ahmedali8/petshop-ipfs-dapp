@@ -66,7 +66,7 @@ const Home = () => {
             </span>
             <span className="m-2">Network connected: {chainId}</span>
           </div>
-          {chainId && chainId !== "1337" ? (
+          {chainId && chainId !== 1337 ? (
             <div className="alert alert-danger" role="alert">
               Please connect to local testnet
             </div>

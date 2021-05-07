@@ -32,13 +32,15 @@ const PetList = () => {
   }
 
   useEffect(() => {
+    setLoading(true);
+
     // Getting contract Obj from drizzle
     const contract = drizzle.contracts.Petshop;
 
     /* PET CREATED EVENT */
     contract.events
       .PetCreated({ fromBlock: 0 }, async (error, event) => {
-        console.log("event data fetched!");
+        console.log("PetCreated event data fetched!");
       })
       .on("data", async (event) => {
         if (event !== undefined) await getPetCreatedData(event);
@@ -50,7 +52,6 @@ const PetList = () => {
 
     const getPetCreatedData = async (data) => {
       try {
-        setLoading(true);
         // console.log("data  >>> ", await data);
         const {
           returnValues: { owner, price, tokenId, tokenURI },
@@ -65,11 +66,10 @@ const PetList = () => {
         // console.log("tokenURIData >>>", tokenURIData);
 
         prePetData.push({ owner, price, tokenId, tokenURIData });
-        // console.log("prePetData >>> ", prePetData);
+        prePetData.sort((a, b) => a - b);
+        console.log("prePetData >>> ", prePetData);
 
         setPetData(prePetData);
-
-        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -87,7 +87,7 @@ const PetList = () => {
     /* PET PURCHASE EVENT */
     contract.events
       .PetPurchase({ fromBlock: 0 }, async (error, event) => {
-        console.log(error, event);
+        console.log("PetPurchase event data fetched!");
       })
       .on("data", async (event) => {
         if (event !== undefined) await getPetPurchaseData(event);
@@ -101,7 +101,6 @@ const PetList = () => {
 
     const getPetPurchaseData = async (data) => {
       try {
-        setLoading(true);
         // console.log("data  >>> ", await data);
         const {
           returnValues: { newOwner, prevOwner, tokenId },
@@ -110,20 +109,25 @@ const PetList = () => {
         console.log("petPurchaseObj >>> ", { newOwner, prevOwner, tokenId });
 
         prePetPurchaseData.push({ newOwner, prevOwner, tokenId });
+        prePetPurchaseData.sort(
+          (a, b) => Number(a.tokenId) - Number(b.tokenId)
+        );
         console.log("prePetPurchaseData >>> ", prePetPurchaseData);
 
         setPetPurchaseData(prePetPurchaseData);
-
-        setLoading(false);
       } catch (error) {
         console.log(error);
       }
     };
-  }, [drizzle, prePetData, prePetPurchaseData]);
+
+    setLoading(false);
+
+    // eslint-disable-next-line
+  }, [drizzle]);
 
   const handleOwner = (owner, id) => {
     console.log(owner, id);
-    let newOwner;
+    let newOwner = owner;
 
     // eslint-disable-next-line
     petPurchaseData?.map((purchasedPet) => {
@@ -151,11 +155,13 @@ const PetList = () => {
   );
 
   const btnClick = async (petId, petPrice) => {
+    setLoading(true);
     console.log("clicked");
     console.log("petId >>> ", petId);
     console.log("petPrice >>> ", petPrice);
 
     await buyPet(drizzleState.accounts[0], petPrice, petId);
+    setLoading(false);
   };
 
   // send transaction to blockchain
@@ -172,8 +178,6 @@ const PetList = () => {
 
     // save the 'stackId' for later reference
     setStackId(stackId);
-
-    return true;
   };
 
   // get status from blockchain
@@ -216,24 +220,21 @@ const PetList = () => {
       <div className="container">
         <div className="text-center">{getTxStatus()}</div>
         <div className="row">
-          {petData ? (
-            petData.map((pet) => (
-              <div key={pet.tokenId} className="col-12 col-md-4 col-lg-3">
-                <PetCard
-                  petOwner={handleOwner(pet.owner, pet.tokenId)}
-                  price={FromWei(pet.price)}
-                  name={pet.tokenURIData.name}
-                  image={pet.tokenURIData.image}
-                  breedObj={pet.tokenURIData.attributes[0]}
-                  locationObj={pet.tokenURIData.attributes[1]}
-                  ageObj={pet.tokenURIData.attributes[2]}
-                  btn={btnHandler(pet.tokenId, pet.price)}
-                />
-              </div>
-            ))
-          ) : (
-            <Loading />
-          )}
+          {petData?.map((pet) => (
+            <div key={pet.tokenId} className="col-12 col-md-auto col-lg-3">
+              <PetCard
+                tokenId={pet.tokenId}
+                petOwner={handleOwner(pet.owner, pet.tokenId)}
+                price={FromWei(pet.price)}
+                name={pet.tokenURIData.name}
+                image={pet.tokenURIData.image}
+                breedObj={pet.tokenURIData.attributes[0]}
+                locationObj={pet.tokenURIData.attributes[1]}
+                ageObj={pet.tokenURIData.attributes[2]}
+                btn={btnHandler(pet.tokenId, pet.price)}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </>

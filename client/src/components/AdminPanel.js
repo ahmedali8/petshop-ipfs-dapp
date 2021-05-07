@@ -98,8 +98,6 @@ const AdminPanel = () => {
 
     // save the 'stackId' for later reference
     setStackId(stackId);
-
-    return true;
   };
 
   const getTxStatus = () => {
