@@ -7,9 +7,9 @@ const { useDrizzle, useDrizzleState } = drizzleReactHooks;
 
 const Home = () => {
   const { drizzle } = useDrizzle();
-  console.log(drizzle);
+  // console.log(drizzle);
   const drizzleState = useDrizzleState((state) => state);
-  console.log(drizzleState);
+  // console.log(drizzleState);
 
   const [chainId, setChainId] = useState("");
   const [dataKey, setDataKey] = useState(null);
@@ -36,15 +36,15 @@ const Home = () => {
   // get connected account from drizzleState
   const account = drizzleState.accounts[0];
   // const account = accounts[0];
-  console.log("account >>> ", account);
+  // console.log("account >>> ", account);
 
   // get contract state from drizzleState
   const { Petshop } = drizzleState.contracts;
-  console.log("dataKey >>> ", dataKey);
+  // console.log("dataKey >>> ", dataKey);
 
   // using the saved 'dataKey', get the owner object in state
   const owner = Petshop.owner[dataKey];
-  console.log("owner >>> ", owner);
+  // console.log("owner >>> ", owner);
 
   return (
     <>

@@ -10,9 +10,9 @@ const { useDrizzle, useDrizzleState } = drizzleReactHooks;
 
 const AdminPanel = () => {
   const { drizzle } = useDrizzle();
-  console.log(drizzle);
+  // console.log(drizzle);
   const drizzleState = useDrizzleState((state) => state);
-  console.log(drizzleState);
+  // console.log(drizzleState);
 
   // function FromWei(n) {
   //   return drizzle.web3.utils.fromWei(n, "ether").toString();
@@ -42,13 +42,13 @@ const AdminPanel = () => {
     setLoading(true);
 
     imgHash = await uploadData(imgBuffer);
-    console.log("imgHash ", imgHash);
+    // console.log("imgHash ", imgHash);
 
     // const URL = `https://ipfs.infura.io/ipfs/${hash}`;
 
     jsonData = await createMetaData(name, imgHash, breed, country, age);
     jsonHash = await uploadData(jsonData);
-    console.log("jsonHash ", jsonHash);
+    // console.log("jsonHash ", jsonHash);
 
     await createPet(
       drizzleState.accounts[0],
@@ -67,7 +67,7 @@ const AdminPanel = () => {
 
   // Upload data to ipfs
   async function uploadData(data) {
-    console.log(data);
+    // console.log(data);
     try {
       const { path } = await ipfs.add(data); // { cid, path, size }
       console.log("path ", path);
@@ -105,17 +105,17 @@ const AdminPanel = () => {
   const getTxStatus = () => {
     // get the transaction states from the drizzle state
     const { transactions, transactionStack } = drizzleState;
-    console.log("transactions >>> ", transactions);
-    console.log("transactionStack >>> ", transactionStack);
+    // console.log("transactions >>> ", transactions);
+    // console.log("transactionStack >>> ", transactionStack);
 
-    console.log("stackId >>> ", stackId);
+    // console.log("stackId >>> ", stackId);
     // get the transaction hash using our saved 'stackId'
     const txHash = transactionStack[stackId];
 
     // if transaction hash does not exist, don't display anything
     if (!txHash) return null;
 
-    console.log("txHash >>> ", txHash);
+    // console.log("txHash >>> ", txHash);
 
     // otherwise, return the transaction status
     return `Transaction status: ${
