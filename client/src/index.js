@@ -15,7 +15,7 @@ const options = {
     },
   },
   events: {
-    Petshop: ["PetCreated"],
+    Petshop: ["PetCreated", 'PetPurchase'],
   },
   // networkWhitelist: [
   //   1337, // Local testnet
