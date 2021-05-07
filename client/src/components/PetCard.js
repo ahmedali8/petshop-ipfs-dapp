@@ -20,9 +20,15 @@ const PetCard = ({
   const drizzleState = useDrizzleState((state) => state);
   // console.log(drizzleState);
 
+  const [chainId, setChainId] = useState("");
   const [dataKey, setDataKey] = useState(null);
 
   useEffect(() => {
+    async function getNetworkId() {
+      setChainId(await drizzle.web3.eth.getChainId());
+    }
+    getNetworkId();
+
     // Getting contract obj from drizzle
     const contract = drizzle.contracts.Petshop;
 
@@ -39,7 +45,7 @@ const PetCard = ({
 
   // using the saved 'dataKey', get the petOwner object in state
   let petOwner = Petshop.ownerOf[dataKey];
-  petOwner = petOwner.value;
+  petOwner = petOwner?.value;
   console.log("petOwner >>> ", petOwner);
 
   return (
@@ -55,7 +61,7 @@ const PetCard = ({
           <h5 className="card-title">{name}</h5>
           <p className="card-text">
             <strong>Price</strong>:{" "}
-            <span>{price != 0 ? `${price} Ether` : "Free"}</span>
+            <span>{price !== 0 ? `${price} Ether` : "Free"}</span>
             <br />
             <strong>{breedObj.trait_type}</strong>:{" "}
             <span>{breedObj.value}</span>
@@ -72,7 +78,9 @@ const PetCard = ({
                 <strong>PetOwner</strong>:{" "}
                 <span>
                   <a
-                    href={`https://rinkeby.etherscan.io/address/${petOwner}`}
+                    href={`https://${
+                      chainId === 3 ? "ropsten" : "rinkeby"
+                    }.etherscan.io/address/${petOwner}`}
                     className="card-link"
                     target="_blank"
                     rel="noreferrer noopener"

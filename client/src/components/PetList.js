@@ -14,14 +14,9 @@ const PetList = () => {
 
   // eslint-disable-next-line
   const prePetData = [];
-  // eslint-disable-next-line
-  const prePetPurchaseData = [];
   const [loading, setLoading] = useState(false);
-
   const [stackId, setStackId] = useState(null);
-
   const [petData, setPetData] = useState(null);
-  const [petPurchaseData, setPetPurchaseData] = useState(null);
 
   // get connected account from drizzleState
   const account = drizzleState.accounts[0];
@@ -66,7 +61,8 @@ const PetList = () => {
         // console.log("tokenURIData >>>", tokenURIData);
 
         prePetData.push({ owner, price, tokenId, tokenURIData });
-        prePetData.sort((a, b) => a - b);
+        // prePetData.sort((a, b) => a - b);
+        prePetData.sort(dynamicSort("tokenId", "asc"));
         console.log("prePetData >>> ", prePetData);
 
         setPetData(prePetData);
@@ -84,66 +80,29 @@ const PetList = () => {
       }
     };
 
-    /* PET PURCHASE EVENT */
-    contract.events
-      .PetPurchase({ fromBlock: 0 }, async (error, event) => {
-        console.log("PetPurchase event data fetched!");
-      })
-      .on("data", async (event) => {
-        if (event !== undefined) await getPetPurchaseData(event);
-      })
-      .on("changed", async (event) => {
-        if (event !== undefined) await getPetPurchaseData(event);
-      })
-      .on("error", async (error) => {
-        console.log(error);
-      });
-
-    const getPetPurchaseData = async (data) => {
-      try {
-        // console.log("data  >>> ", await data);
-        const {
-          returnValues: { newOwner, prevOwner, tokenId },
-        } = await data;
-
-        console.log("petPurchaseObj >>> ", { newOwner, prevOwner, tokenId });
-
-        prePetPurchaseData.push({ newOwner, prevOwner, tokenId });
-        prePetPurchaseData.sort(
-          (a, b) => Number(a.tokenId) - Number(b.tokenId)
-        );
-        console.log("prePetPurchaseData >>> ", prePetPurchaseData);
-
-        setPetPurchaseData(prePetPurchaseData);
-      } catch (error) {
-        console.log(error);
+    function dynamicSort(property, order) {
+      var sort_order = 1;
+      if (order === "desc") {
+        sort_order = -1;
       }
-    };
+      return function (a, b) {
+        // a should come before b in the sorted order
+        if (Number(a[property]) < Number(b[property])) {
+          return -1 * sort_order;
+          // a should come after b in the sorted order
+        } else if (Number(a[property]) > Number(b[property])) {
+          return 1 * sort_order;
+          // a and b are the same
+        } else {
+          return 0 * sort_order;
+        }
+      };
+    }
 
     setLoading(false);
 
     // eslint-disable-next-line
   }, [drizzle]);
-
-  const handleOwner = (owner, id) => {
-    console.log(owner, id);
-    let newOwner = owner;
-
-    // eslint-disable-next-line
-    petPurchaseData?.map((purchasedPet) => {
-      if (owner === purchasedPet.prevOwner && id === purchasedPet.tokenId) {
-        console.log("owner >>> ", owner);
-        console.log("id >>> ", id);
-        console.log("purchasedPet.newOwner >>> ", purchasedPet.newOwner);
-
-        newOwner = purchasedPet.newOwner;
-      } else {
-        newOwner = owner;
-      }
-    });
-
-    return newOwner;
-  };
 
   const btnHandler = (petId, petPrice) => (
     <button
@@ -211,8 +170,6 @@ const PetList = () => {
   console.log("petData >>> ", petData);
   console.log("petDataLength >>> ", petData?.length);
 
-  console.log("petPurchaseData >>> ", petPurchaseData);
-
   if (loading) return <Loading />;
 
   return (
@@ -224,7 +181,6 @@ const PetList = () => {
             <div key={pet.tokenId} className="col-12 col-md-auto col-lg-3">
               <PetCard
                 tokenId={pet.tokenId}
-                petOwner={handleOwner(pet.owner, pet.tokenId)}
                 price={FromWei(pet.price)}
                 name={pet.tokenURIData.name}
                 image={pet.tokenURIData.image}

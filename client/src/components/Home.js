@@ -55,7 +55,9 @@ const Home = () => {
             <span className="m-2">
               Address connected:{" "}
               <a
-                href={`https://rinkeby.etherscan.io/address/${account}`}
+                href={`https://${
+                  chainId === 3 ? "ropsten" : "rinkeby"
+                }.etherscan.io/address/${account}`}
                 className="card-link"
               >
                 {`${String(account).slice(0, 5)}...${String(account).slice(
@@ -66,9 +68,9 @@ const Home = () => {
             </span>
             <span className="m-2">Network connected: {chainId}</span>
           </div>
-          {chainId && chainId !== 1337 ? (
+          {chainId && (chainId !== 1337 || chainId !== 3 || chainId !== 4) ? (
             <div className="alert alert-danger" role="alert">
-              Please connect to local testnet
+              Please connect to rinkeby or ropsten testnet
             </div>
           ) : null}
         </div>
