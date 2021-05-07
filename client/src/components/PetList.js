@@ -12,11 +12,12 @@ const PetList = () => {
   const drizzleState = useDrizzleState((state) => state);
   console.log(drizzleState);
 
+  // eslint-disable-next-line
   const prePetData = [];
+  // eslint-disable-next-line
   const prePetPurchaseData = [];
   const [loading, setLoading] = useState(false);
 
-  const [dataKey, setDataKey] = useState(null);
   const [stackId, setStackId] = useState(null);
 
   const [petData, setPetData] = useState(null);
@@ -25,9 +26,6 @@ const PetList = () => {
   // get connected account from drizzleState
   const account = drizzleState.accounts[0];
   console.log("account >>> ", account);
-
-  // get contract state from drizzleState
-  const { Petshop } = drizzleState.contracts;
 
   function FromWei(n) {
     return drizzle.web3.utils.fromWei(n, "ether").toString();
@@ -121,18 +119,13 @@ const PetList = () => {
         console.log(error);
       }
     };
-
-    // let drizzle know we want to watch the 'myString' method
-    const dataKey = contract.methods["owner"].cacheCall();
-
-    // save the `dataKey` to local component state for later reference
-    setDataKey(dataKey);
-  }, [drizzle]);
+  }, [drizzle, prePetData, prePetPurchaseData]);
 
   const handleOwner = (owner, id) => {
     console.log(owner, id);
     let newOwner;
 
+    // eslint-disable-next-line
     petPurchaseData?.map((purchasedPet) => {
       if (owner === purchasedPet.prevOwner && id === purchasedPet.tokenId) {
         console.log("owner >>> ", owner);
@@ -216,11 +209,6 @@ const PetList = () => {
 
   console.log("petPurchaseData >>> ", petPurchaseData);
 
-  /* using the saved 'dataKey', get the variable we're interested in */
-  // console.log("dataKey >>> ", dataKey);
-  const owner = Petshop.owner[dataKey];
-  // console.log("owner >>> ", owner);
-
   if (loading) return <Loading />;
 
   return (
@@ -232,7 +220,6 @@ const PetList = () => {
             petData.map((pet) => (
               <div key={pet.tokenId} className="col-12 col-md-4 col-lg-3">
                 <PetCard
-                  owner={owner}
                   petOwner={handleOwner(pet.owner, pet.tokenId)}
                   price={FromWei(pet.price)}
                   name={pet.tokenURIData.name}

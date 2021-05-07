@@ -20,7 +20,7 @@ const Home = () => {
     }
 
     getNetworkId();
-  }, [, drizzle]);
+  }, [drizzle]);
 
   useEffect(() => {
     // Getting contract obj from drizzle
@@ -31,7 +31,7 @@ const Home = () => {
 
     // save the 'dataKey' to local component state for later reference
     setDataKey(dataKey);
-  }, []);
+  }, [drizzle]);
 
   // get connected account from drizzleState
   const account = drizzleState.accounts[0];
@@ -52,9 +52,21 @@ const Home = () => {
         <div className="text-center">
           <h1>PETSHOP DAPP</h1>
           <div className="alert alert-success" role="alert">
-            Network connected: {chainId}
+            <span className="m-2">
+              Address connected:{" "}
+              <a
+                href={`https://rinkeby.etherscan.io/address/${account}`}
+                className="card-link"
+              >
+                {`${String(account).slice(0, 5)}...${String(account).slice(
+                  37,
+                  42
+                )}`}
+              </a>
+            </span>
+            <span className="m-2">Network connected: {chainId}</span>
           </div>
-          {chainId && chainId != "1337" ? (
+          {chainId && chainId !== "1337" ? (
             <div className="alert alert-danger" role="alert">
               Please connect to local testnet
             </div>

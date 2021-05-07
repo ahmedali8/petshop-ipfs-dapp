@@ -1,7 +1,6 @@
 import React from "react";
 
 const PetCard = ({
-  owner,
   petOwner,
   price,
   name,
@@ -20,7 +19,7 @@ const PetCard = ({
           src={`https://ipfs.io/ipfs/${image}`}
           className="card-img-top"
           alt="..."
-          style={{ width: "200px" }}
+          style={{ width: "250px" }}
         />
         <div className="card-body">
           <h5 className="card-title">{name}</h5>
