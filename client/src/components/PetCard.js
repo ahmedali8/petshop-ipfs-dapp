@@ -1,27 +1,45 @@
 import React from "react";
 
-const PetCard = ({ image, title, breed, age, location, petOwner, btn }) => {
+const PetCard = ({
+  owner,
+  petOwner,
+  price,
+  name,
+  image,
+  breedObj,
+  locationObj,
+  ageObj,
+  btn,
+}) => {
   const zeroAddress = "0x0000000000000000000000000000000000000000";
 
   return (
     <>
       <div className="card my-3">
-        <img src={image} className="card-img-top" alt="..." />
+        <img
+          src={`https://ipfs.io/ipfs/${image}`}
+          className="card-img-top"
+          alt="..."
+          style={{ width: "200px" }}
+        />
         <div className="card-body">
-          <h5 className="card-title">{title}</h5>
+          <h5 className="card-title">{name}</h5>
           <p className="card-text">
-            <strong>Breed</strong>: <span>{breed}</span>
+            <strong>Price</strong>: <span>{price} Ether</span>
             <br />
-            <strong>Age</strong>: <span>{age}</span>
+            <strong>{breedObj.trait_type}</strong>:{" "}
+            <span>{breedObj.value}</span>
             <br />
-            <strong>Location</strong>:{" "}
+            <strong>{ageObj.trait_type}</strong>: <span>{ageObj.value}</span>
+            <br />
+            <strong>{locationObj.trait_type}</strong>:{" "}
             <span>
-              {location.label}, {location.value}
+              {locationObj.label}, {locationObj.value}
             </span>
             <br />
             {petOwner !== zeroAddress ? (
               <>
-                <strong>Owner</strong>:{" "}
+                <strong>PetOwner</strong>:{" "}
                 <span>
                   <a
                     href={`https://rinkeby.etherscan.io/address/${petOwner}`}
@@ -35,9 +53,7 @@ const PetCard = ({ image, title, breed, age, location, petOwner, btn }) => {
               </>
             ) : null}
           </p>
-          <a href="#" className="btn btn-primary">
-            buy
-          </a>
+          {btn}
         </div>
       </div>
     </>
