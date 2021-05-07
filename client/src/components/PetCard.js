@@ -43,7 +43,7 @@ const PetCard = ({
                 <span>
                   <a
                     href={`https://rinkeby.etherscan.io/address/${petOwner}`}
-                    class="card-link"
+                    className="card-link"
                   >
                     {`${String(petOwner).slice(0, 5)}...${String(
                       petOwner
