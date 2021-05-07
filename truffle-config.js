@@ -32,7 +32,7 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-  contracts_build_directory: path.join(__dirname, 'client/src/contracts'),
+  contracts_build_directory: path.join(__dirname, "client/src/contracts"),
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -49,7 +49,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider({
           privateKeys: [process.env.PRIVATE_KEY_1],
-          providerOrUrl: `https://ropsten.infura.io/v3/${process.env.INFURA_KEY}`,
+          providerOrUrl: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
         }),
       network_id: "3",
       gas: 5500000,
@@ -59,7 +59,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider({
           privateKeys: [process.env.PRIVATE_KEY_1],
-          providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`,
+          providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
         }),
       gas: 5000000,
       network_id: "4",
