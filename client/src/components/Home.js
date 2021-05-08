@@ -11,7 +11,7 @@ const Home = () => {
   const drizzleState = useDrizzleState((state) => state);
   // console.log(drizzleState);
 
-  const [chainId, setChainId] = useState("");
+  const [chainId, setChainId] = useState(0);
   const [dataKey, setDataKey] = useState(null);
 
   useEffect(() => {
@@ -46,6 +46,8 @@ const Home = () => {
   const owner = Petshop.owner[dataKey];
   // console.log("owner >>> ", owner);
 
+  console.log("chainId >>> ", chainId);
+
   return (
     <>
       <div className="container my-2">
@@ -66,13 +68,10 @@ const Home = () => {
                 )}`}
               </a>
             </span>
-            <span className="m-2">Network connected: {chainId}</span>
+            <span className="m-2">
+              Network connected: {chainId === 3 ? "Ropsten" : "Rinkeby"}
+            </span>
           </div>
-          {chainId && (chainId !== 1337 || chainId !== 3 || chainId !== 4) ? (
-            <div className="alert alert-danger" role="alert">
-              Please connect to rinkeby or ropsten testnet
-            </div>
-          ) : null}
         </div>
         <div className="row">
           <div className="col-12 col-md-10 mx-auto">
