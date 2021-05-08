@@ -57,6 +57,8 @@ contract Petshop is Context, Ownable, ERC721URIStorage {
         uint256 price
     );
 
+    event PetDeleted(uint256 tokenId);
+
     event PetPriceChanged(uint256 tokenId, uint256 prevPrice, uint256 newPrice);
 
     constructor(
@@ -117,6 +119,17 @@ contract Petshop is Context, Ownable, ERC721URIStorage {
         emit PetCreated(to_, tokenId_, price_, tokenURI_);
 
         // new tokenId
+        return tokenId_;
+    }
+
+    function deletePet(uint256 tokenId_) public virtual returns (uint256) {
+        // burn tokenId
+        _burn(tokenId_);
+
+        // emit event
+        emit PetDeleted(tokenId_);
+
+        // deleted tokenId
         return tokenId_;
     }
 

@@ -36,14 +36,21 @@ contract("Petshop", ([owner, ...accounts]) => {
       assert.equal(ownerOfPet.toString(), owner);
     });
 
-    it("creates four pets", async () => {
+    it("creates four pets and deletes one", async () => {
       await petshop.createPet(owner, toWei("0.01"), "", { from: owner });
       await petshop.createPet(owner, toWei("0.0001"), "", { from: owner });
       await petshop.createPet(owner, toWei("0.001"), "", { from: owner });
       await petshop.createPet(owner, toWei("0.002"), "", { from: owner });
+      await petshop.createPet(owner, toWei("0.004"), "", { from: owner });
 
       const ownerOfPet = await petshop.ownerOf("4");
       assert.equal(ownerOfPet.toString(), owner);
+
+      await petshop.deletePet("5", { from: owner });
+      await truffleAssert.reverts(
+        petshop.ownerOf("5"),
+        "ERC721: owner query for nonexistent token"
+      );
     });
 
     it("should fail calling nonexistent token", async () => {
