@@ -22,7 +22,7 @@ const PetList = () => {
   const [petDeletedData, setPetDeletedData] = useState(null);
 
   // get connected account from drizzleState
-  const account = drizzleState.accounts[0];
+  // const account = drizzleState.accounts[0];
   // console.log("account >>> ", account);
 
   function FromWei(n) {
