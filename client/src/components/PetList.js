@@ -14,9 +14,12 @@ const PetList = () => {
 
   // eslint-disable-next-line
   const prePetData = [];
+  // eslint-disable-next-line
+  const prePetDeletedData = [];
   const [loading, setLoading] = useState(false);
   const [stackId, setStackId] = useState(null);
   const [petData, setPetData] = useState(null);
+  const [petDeletedData, setPetDeletedData] = useState(null);
 
   // get connected account from drizzleState
   const account = drizzleState.accounts[0];
@@ -99,21 +102,52 @@ const PetList = () => {
       };
     }
 
+    contract.events
+      .PetDeleted({ fromBlock: 0 }, async (error, event) => {
+        console.log("PetDeleted event data fetched!");
+      })
+      .on("data", async (event) => {
+        if (event !== undefined) await getPetDeletedData(event);
+      })
+      .on("changed", async (event) => {
+        if (event !== undefined) await getPetDeletedData(event);
+      })
+      .on("error", async (error) => console.log(error));
+
+    const getPetDeletedData = async (data) => {
+      try {
+        // console.log("data  >>> ", await data);
+        const {
+          returnValues: { tokenId },
+        } = await data;
+
+        console.log("deletedPetObj >>> ", tokenId);
+
+        prePetDeletedData.push(tokenId);
+        prePetDeletedData.sort((a, b) => Number(a) - Number(b));
+        console.log("prePetDeletedData >>> ", prePetDeletedData);
+
+        setPetDeletedData(prePetDeletedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     setLoading(false);
 
     // eslint-disable-next-line
   }, [drizzle]);
 
-  const btnHandler = (petId, petPrice) => (
+  const buyBtnHandler = (petId, petPrice) => (
     <button
-      onClick={() => btnClick(petId, petPrice)}
-      className="btn btn-primary"
+      onClick={() => buyBtnClick(petId, petPrice)}
+      className="btn btn-primary m-2"
     >
       buy
     </button>
   );
 
-  const btnClick = async (petId, petPrice) => {
+  const buyBtnClick = async (petId, petPrice) => {
     setLoading(true);
     console.log("clicked");
     console.log("petId >>> ", petId);
@@ -132,6 +166,39 @@ const PetList = () => {
     const stackId = contract.methods["buyPet"].cacheSend(tokenId, {
       from: account,
       value: price,
+    });
+    console.log("stackId >>> ", stackId);
+
+    // save the 'stackId' for later reference
+    setStackId(stackId);
+  };
+
+  const deleteBtnHandler = (petId) => (
+    <button
+      onClick={() => deleteBtnClick(petId)}
+      className="btn btn-danger m-2"
+    >
+      delete
+    </button>
+  );
+
+  const deleteBtnClick = async (petId) => {
+    setLoading(true);
+    console.log("clicked");
+    console.log("petId >>> ", petId);
+
+    await deletePet(drizzleState.accounts[0], petId);
+    setLoading(false);
+  };
+
+  // send transaction to blockchain
+  const deletePet = async (account, tokenId) => {
+    // Get contract Obj to send tx
+    const contract = drizzle.contracts.Petshop;
+
+    // let drizzle know we want to call the method with 'value'
+    const stackId = contract.methods["deletePet"].cacheSend(tokenId, {
+      from: account,
     });
     console.log("stackId >>> ", stackId);
 
@@ -170,6 +237,18 @@ const PetList = () => {
   console.log("petData >>> ", petData);
   console.log("petDataLength >>> ", petData?.length);
 
+  console.log("petDeletedData >>> ", petDeletedData);
+
+  const isPetAvailable = (petId) => {
+    console.log("petId >>> ", petId);
+    if (petDeletedData) {
+      const index = petDeletedData.lastIndexOf(petId);
+      return index === -1 ? true : false;
+    }
+
+    return true;
+  };
+
   if (loading) return <Loading />;
 
   return (
@@ -177,20 +256,29 @@ const PetList = () => {
       <div className="container">
         <div className="text-center">{getTxStatus()}</div>
         <div className="row">
-          {petData?.map((pet) => (
-            <div key={pet.tokenId} className="col-12 col-md-auto col-lg-3">
-              <PetCard
-                tokenId={pet.tokenId}
-                price={FromWei(pet.price)}
-                name={pet.tokenURIData.name}
-                image={pet.tokenURIData.image}
-                breedObj={pet.tokenURIData.attributes[0]}
-                locationObj={pet.tokenURIData.attributes[1]}
-                ageObj={pet.tokenURIData.attributes[2]}
-                btn={btnHandler(pet.tokenId, pet.price)}
-              />
-            </div>
-          ))}
+          {petData?.map((pet, i) => {
+            console.log("isPetAvailable >>> ", isPetAvailable(pet.tokenId));
+            if (isPetAvailable(pet.tokenId)) {
+              console.log("print ", pet.tokenId);
+              return (
+                <div key={pet.tokenId} className="col-12 col-md-auto col-lg-3">
+                  <PetCard
+                    tokenId={pet.tokenId}
+                    price={FromWei(pet.price)}
+                    name={pet.tokenURIData.name}
+                    image={pet.tokenURIData.image}
+                    breedObj={pet.tokenURIData.attributes[0]}
+                    locationObj={pet.tokenURIData.attributes[1]}
+                    ageObj={pet.tokenURIData.attributes[2]}
+                    buyBtn={buyBtnHandler(pet.tokenId, pet.price)}
+                    deleteBtn={deleteBtnHandler(pet.tokenId)}
+                  />
+                </div>
+              );
+            } else {
+              return null;
+            }
+          })}
         </div>
       </div>
     </>

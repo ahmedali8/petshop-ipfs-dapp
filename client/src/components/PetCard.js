@@ -11,7 +11,8 @@ const PetCard = ({
   breedObj,
   locationObj,
   ageObj,
-  btn,
+  buyBtn,
+  deleteBtn,
 }) => {
   const zeroAddress = "0x0000000000000000000000000000000000000000";
 
@@ -93,7 +94,8 @@ const PetCard = ({
               </>
             ) : null}
           </p>
-          {btn}
+          {buyBtn}
+          {deleteBtn}
         </div>
       </div>
     </>
