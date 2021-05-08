@@ -8,9 +8,9 @@ const { useDrizzle, useDrizzleState } = drizzleReactHooks;
 
 const PetList = () => {
   const { drizzle } = useDrizzle();
-  console.log(drizzle);
+  // console.log(drizzle);
   const drizzleState = useDrizzleState((state) => state);
-  console.log(drizzleState);
+  // console.log(drizzleState);
 
   // eslint-disable-next-line
   const prePetData = [];
@@ -23,7 +23,7 @@ const PetList = () => {
 
   // get connected account from drizzleState
   const account = drizzleState.accounts[0];
-  console.log("account >>> ", account);
+  // console.log("account >>> ", account);
 
   function FromWei(n) {
     return drizzle.web3.utils.fromWei(n, "ether").toString();
@@ -66,7 +66,7 @@ const PetList = () => {
         prePetData.push({ owner, price, tokenId, tokenURIData });
         // prePetData.sort((a, b) => a - b);
         prePetData.sort(dynamicSort("tokenId", "asc"));
-        console.log("prePetData >>> ", prePetData);
+        // console.log("prePetData >>> ", prePetData);
 
         setPetData(prePetData);
       } catch (error) {
@@ -121,11 +121,11 @@ const PetList = () => {
           returnValues: { tokenId },
         } = await data;
 
-        console.log("deletedPetObj >>> ", tokenId);
+        // console.log("deletedPetObj >>> ", tokenId);
 
         prePetDeletedData.push(tokenId);
         prePetDeletedData.sort((a, b) => Number(a) - Number(b));
-        console.log("prePetDeletedData >>> ", prePetDeletedData);
+        // console.log("prePetDeletedData >>> ", prePetDeletedData);
 
         setPetDeletedData(prePetDeletedData);
       } catch (error) {
@@ -150,8 +150,8 @@ const PetList = () => {
   const buyBtnClick = async (petId, petPrice) => {
     setLoading(true);
     console.log("clicked");
-    console.log("petId >>> ", petId);
-    console.log("petPrice >>> ", petPrice);
+    // console.log("petId >>> ", petId);
+    // console.log("petPrice >>> ", petPrice);
 
     await buyPet(drizzleState.accounts[0], petPrice, petId);
     setLoading(false);
@@ -167,7 +167,7 @@ const PetList = () => {
       from: account,
       value: price,
     });
-    console.log("stackId >>> ", stackId);
+    // console.log("stackId >>> ", stackId);
 
     // save the 'stackId' for later reference
     setStackId(stackId);
@@ -185,7 +185,7 @@ const PetList = () => {
   const deleteBtnClick = async (petId) => {
     setLoading(true);
     console.log("clicked");
-    console.log("petId >>> ", petId);
+    // console.log("petId >>> ", petId);
 
     await deletePet(drizzleState.accounts[0], petId);
     setLoading(false);
@@ -200,7 +200,7 @@ const PetList = () => {
     const stackId = contract.methods["deletePet"].cacheSend(tokenId, {
       from: account,
     });
-    console.log("stackId >>> ", stackId);
+    // console.log("stackId >>> ", stackId);
 
     // save the 'stackId' for later reference
     setStackId(stackId);
@@ -221,10 +221,10 @@ const PetList = () => {
     if (!txHash) return null;
 
     // console.log("txHash >>> ", txHash);
-    console.log(
-      "transactions[txHash] >>> ",
-      transactions[txHash] && transactions[txHash]
-    );
+    // console.log(
+    //   "transactions[txHash] >>> ",
+    //   transactions[txHash] && transactions[txHash]
+    // );
 
     // otherwise, return the transaction status
     return `Transaction status: ${
@@ -234,13 +234,13 @@ const PetList = () => {
     }`;
   };
 
-  console.log("petData >>> ", petData);
-  console.log("petDataLength >>> ", petData?.length);
+  // console.log("petData >>> ", petData);
+  // console.log("petDataLength >>> ", petData?.length);
 
-  console.log("petDeletedData >>> ", petDeletedData);
+  // console.log("petDeletedData >>> ", petDeletedData);
 
   const isPetAvailable = (petId) => {
-    console.log("petId >>> ", petId);
+    // console.log("petId >>> ", petId);
     if (petDeletedData) {
       const index = petDeletedData.lastIndexOf(petId);
       return index === -1 ? true : false;
@@ -257,9 +257,9 @@ const PetList = () => {
         <div className="text-center">{getTxStatus()}</div>
         <div className="row">
           {petData?.map((pet, i) => {
-            console.log("isPetAvailable >>> ", isPetAvailable(pet.tokenId));
+            // console.log("isPetAvailable >>> ", isPetAvailable(pet.tokenId));
             if (isPetAvailable(pet.tokenId)) {
-              console.log("print ", pet.tokenId);
+              // console.log("print ", pet.tokenId);
               return (
                 <div key={pet.tokenId} className="col-12 col-md-auto col-lg-3">
                   <PetCard

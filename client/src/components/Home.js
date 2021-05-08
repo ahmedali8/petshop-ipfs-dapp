@@ -46,7 +46,7 @@ const Home = () => {
   const owner = Petshop.owner[dataKey];
   // console.log("owner >>> ", owner);
 
-  console.log("chainId >>> ", chainId);
+  // console.log("chainId >>> ", chainId);
 
   return (
     <>

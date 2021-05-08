@@ -8,7 +8,7 @@ import "./App.css";
 const { useDrizzleState } = drizzleReactHooks;
 
 const App = () => {
-  console.log(drizzleReactHooks); // DrizzleProvider, Initializer, useDrizzle, useDrizzleState
+  // console.log(drizzleReactHooks); // DrizzleProvider, Initializer, useDrizzle, useDrizzleState
   const drizzleStatus = useDrizzleState((state) => state.drizzleStatus);
 
   window.ethereum.on("accountsChanged", (accounts) => {

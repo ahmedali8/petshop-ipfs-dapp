@@ -70,7 +70,7 @@ const AdminPanel = () => {
     // console.log(data);
     try {
       const { path } = await ipfs.add(data); // { cid, path, size }
-      console.log("path ", path);
+      // console.log("path ", path);
       return path;
     } catch (error) {
       console.error(error);

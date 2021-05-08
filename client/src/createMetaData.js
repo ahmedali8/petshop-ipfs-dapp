@@ -21,7 +21,7 @@ const metadataTemple = {
 const createMetaData = async (name, imgHash, breed, location, age) => {
   let petMetadata = metadataTemple;
 
-  console.log(petMetadata["name"]);
+  // console.log(petMetadata["name"]);
   petMetadata["name"] = name;
   petMetadata["image"] = imgHash;
 

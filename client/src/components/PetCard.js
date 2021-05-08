@@ -40,6 +40,9 @@ const PetCard = ({
     setDataKey(dataKey);
   }, [drizzle, tokenId]);
 
+  // get connected account from drizzleState
+  const account = drizzleState.accounts[0];
+
   // get contract state from drizzleState
   const { Petshop } = drizzleState.contracts;
   // console.log("dataKey >>> ", dataKey);
@@ -47,7 +50,7 @@ const PetCard = ({
   // using the saved 'dataKey', get the petOwner object in state
   let petOwner = Petshop.ownerOf[dataKey];
   petOwner = petOwner?.value;
-  console.log("petOwner >>> ", petOwner);
+  // console.log("petOwner >>> ", petOwner);
 
   return (
     <>
@@ -94,8 +97,8 @@ const PetCard = ({
               </>
             ) : null}
           </p>
-          {buyBtn}
-          {deleteBtn}
+          {account !== petOwner ? buyBtn : null}
+          {account === petOwner ? deleteBtn : null}
         </div>
       </div>
     </>
